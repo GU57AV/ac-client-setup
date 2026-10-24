@@ -1,0 +1,12 @@
+# Downloads and installers never go in the repo
+*.exe
+*.msi
+*.zip
+*.dll
+*.dat
+downloads/
+# Local settings/backups and anything secret
+*.bak*
+*.ini
+.env
+*.reg
