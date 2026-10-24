@@ -1,39 +1,104 @@
 # Asheron's Call client setup (ACEmulator)
 
-Everything needed to play Asheron's Call on Windows 10/11 against an ACEmulator server,
-with the usual add-on stack: Decal, ThwargLauncher,
-Virindi Bundle, UtilityBelt, MagTools, Chaos Helper, TreeStats, Mag-Filter and the
+A step-by-step guide to installing Asheron's Call on Windows 10/11 for an
+[ACEmulator](https://github.com/ACEmulator/ACE) (ACE) server, with the usual add-on stack: Decal,
+ThwargLauncher, Virindi Bundle, UtilityBelt, MagTools, Chaos Helper, TreeStats, Mag-Filter and the
 DemonicControl VTank meta.
 
-`Install-ACClient.ps1` does all of it. It downloads each file from its original source,
-checks it against a pinned SHA-256 hash (or Microsoft's signature) and stops if anything
-doesn't match. Nothing is redistributed from this repo.
+There are two ways to do it:
 
-## Quick start
+- **[Part A: with the script](#part-a-install-with-the-script)**. `Install-ACClient.ps1` downloads
+  every file from its original source, checks it against a pinned SHA-256 hash (or Microsoft's
+  signature), installs it and registers the plugins. You only click through two installers.
+- **[Part B: by hand](#part-b-install-by-hand)**. The same steps, done yourself, with every download
+  link.
 
-1. Download this repo (Code -> Download ZIP) and unzip it, or `git clone` it.
-2. Open **Windows PowerShell** (not as admin; the script asks for elevation itself) in that folder.
-3. Optional dry run, changes nothing:
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\Install-ACClient.ps1 -CheckOnly
-   ```
-4. Install, adding your ACE server to ThwargLauncher (use your server's name, address and port):
-   ```powershell
-   powershell -ExecutionPolicy Bypass -File .\Install-ACClient.ps1 -ServerName "My Server" -ServerHost play.example.com -ServerPort 9000
-   ```
-   Accept the UAC prompt. Two windows need you:
-   - the **Turbine installer**: accept the EULA if you agree, keep the default folder
-     `C:\Turbine\Asheron's Call`, decline launching the game at the end;
-   - the **Virindi Plugin Installer**: click *Check Libs*, then *Install*, then close it.
-5. Finish the [manual steps](#after-the-script) below.
+Both end with **[Part C: first start and checks](#part-c-first-start-and-checks)**.
+Nothing is redistributed from this repo; everything comes from its authors or their documented mirrors.
 
-The script is safe to re-run: finished parts are skipped. Re-run it after Virindi comes back
-online, after the first game start (for the dual-log setting), or after any failure.
+## Before you start
 
-About 1.3 GB is downloaded (most of it the client installer and the dat files) to
-`%TEMP%\ac-client-setup`; delete that folder afterwards if you like.
+You need:
 
-### Options
+- **Windows 10 or 11**, an account that can approve admin (UAC) prompts, and about **3 GB** free on `C:`
+  (1.3 GB of downloads, which you can delete afterwards, plus the game).
+- From your server's admin: the **server address** (host name or IP), the **port** (usually `9000`) and
+  whether accounts are created at first login (most ACE servers do this).
+- Internet access to `web.archive.org`, `archive.org`, `github.com`, `gitlab.com`, `decaldev.com`,
+  `thwargle.com`, `virindi.net` and Microsoft's download sites. If you use a VPN and a download keeps
+  failing, see [Troubleshooting](#troubleshooting).
+
+Good to know:
+
+- Installing takes 15-30 minutes, most of it downloading.
+- **Virindi** (VTank, Virindi Views) installs only while virindi.net is online, because its installer
+  downloads the plugins from there. If it is down, everything else still installs; run the script again
+  later.
+
+---
+
+## Part A: Install with the script
+
+### A1. Get the files
+
+On this page, click **Code -> Download ZIP**, then unzip it, e.g. to `Downloads\ac-client-setup`.
+(Or `git clone` the repo.)
+
+### A2. Open PowerShell in that folder
+
+Open the unzipped folder in Explorer, click the address bar, type `powershell` and press Enter.
+**Don't** start it as administrator; the script asks for that itself.
+
+### A3. Dry run (optional, changes nothing)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Install-ACClient.ps1 -CheckOnly
+```
+
+You get a table of every component as `present` or `MISSING`. On a fresh PC everything is missing.
+The *Virindi Bundle* row says "virindi.net unreachable" if that site is down right now.
+
+### A4. Run the install
+
+Use your server's name, address and port:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Install-ACClient.ps1 -ServerName "My Server" -ServerHost play.example.com -ServerPort 9000
+```
+
+`-ServerName/-ServerHost/-ServerPort` are optional: they add the server to ThwargLauncher for you.
+Leave them out and you add the server by hand in [C1](#c1-thwarglauncher).
+
+What happens:
+
+1. **UAC prompt**: click *Yes*. A new, elevated PowerShell window continues. Keep it open.
+2. **Prerequisites** install silently: .NET 3.5 (from Windows Update; this can take a few minutes),
+   Visual C++ runtimes, DirectX 9.
+3. The client installer (about 570 MB) downloads, then the **Turbine installer window** opens:
+   - accept the license agreement if you agree to it,
+   - keep the default folder **`C:\Turbine\Asheron's Call`**,
+   - at the end, **don't** launch or update the game.
+4. The end-of-retail files (about 485 MB) download and replace the installer's older ones (the originals
+   are kept in `C:\Turbine\Asheron's Call\_original-installer-files`).
+5. **Decal** and **ThwargLauncher** install silently.
+6. If virindi.net is online, the **Virindi Plugin Installer** window opens: click **Check Libs**, then
+   **Install**, then close the window when it says the install is complete.
+7. **UtilityBelt**, **MagTools**, **Mag-Filter**, **Chaos Helper**, **TreeStats** and the
+   **DemonicControl** files are installed and registered in Decal.
+8. A **summary table** shows every component. `pending` lines need you (see the next step).
+
+If anything fails, the script stops with a message saying why. Fix it (see
+[Troubleshooting](#troubleshooting)) and run the same command again: finished parts are skipped.
+
+### A5. Run it again after the first game start
+
+Once you have started the game and logged in once (Part C), run the same command again. It then switches
+on dual-logging (that file only exists after the first start) and, if virindi.net was down before,
+installs Virindi and moves DemonicControl into VTank's folder.
+
+When everything shows `present`, you can delete the download folder `%TEMP%\ac-client-setup`.
+
+### Script options
 
 | Option | Effect |
 |---|---|
@@ -41,6 +106,139 @@ About 1.3 GB is downloaded (most of it the client installer and the dat files) t
 | `-SkipVirindi` | Leave out the Virindi Bundle and DemonicControl. |
 | `-ServerName`, `-ServerHost`, `-ServerPort` | Add an ACE server to ThwargLauncher's list. |
 | `-WorkDir <path>` | Download folder (default `%TEMP%\ac-client-setup`). |
+
+Continue with [Part C](#part-c-first-start-and-checks).
+
+---
+
+## Part B: Install by hand
+
+The script does exactly these steps. Download each file into its own folder. To check a download, run
+`Get-FileHash <file>` in PowerShell and compare it with the SHA-256 in the script's `$Downloads` table
+(Microsoft files: right-click -> *Properties* -> *Digital Signatures* should show Microsoft Corporation).
+
+### B1. .NET Framework 3.5
+
+Start menu -> type *Turn Windows features on or off* -> tick **.NET Framework 3.5 (includes .NET 2.0
+and 3.0)** -> OK. Windows downloads it from Windows Update.
+
+### B2. Visual C++ runtimes (all three, x86)
+
+| File | Link |
+|---|---|
+| VC++ 2005 SP1 (8.0.50727.762), Microsoft no longer hosts it | [Wayback Machine copy of Microsoft's URL](https://web.archive.org/web/20190419092632id_/https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe) |
+| VC++ 2005 SP1 MFC security update (8.0.50727.6195) | [download.microsoft.com](https://download.microsoft.com/download/8/B/4/8B42259F-5D70-43F4-AC2E-4B208FD8D66A/vcredist_x86.EXE) |
+| VC++ 2015-2022 x86 (Decal needs it) | [aka.ms/vs/17/release/vc_redist.x86.exe](https://aka.ms/vs/17/release/vc_redist.x86.exe) |
+
+Run each one and accept its defaults. You need **both** 2005 packages: the Virindi installer checks for
+the original 762 one.
+
+### B3. DirectX 9.0c (June 2010)
+
+Download [directx_Jun2010_redist.exe](https://download.microsoft.com/download/8/4/A/84A35BF1-DAFE-4AE8-82AF-AD2AE20B6B14/directx_Jun2010_redist.exe).
+Run it, unpack it into an empty folder, then run **`DXSETUP.exe`** from that folder.
+
+### B4. The Asheron's Call client
+
+1. Download [ac1install.exe](https://web.archive.org/web/20201121104423id_/http://content.turbine.com/sites/clientdl/ac1/ac1install.exe)
+   (Turbine's original installer, about 570 MB, from the Wayback Machine).
+2. Run it, accept the license if you agree, keep the default folder **`C:\Turbine\Asheron's Call`**,
+   and don't launch or update the game at the end.
+
+### B5. End-of-retail files
+
+1. Download [ac-updates.zip](https://archive.org/download/ac-updates/ac-updates.zip) (about 485 MB). It is
+   byte-identical to the MEGA download the community guides link to.
+2. In `C:\Turbine\Asheron's Call`, make a folder `_original-installer-files` and move these four files
+   into it: `acclient.exe`, `client_cell_1.dat`, `client_local_English.dat`, `client_portal.dat`.
+3. Copy the four files from the zip into `C:\Turbine\Asheron's Call`.
+4. Check: `client_portal.dat` is 926,941,184 bytes and `client_cell_1.dat` is 348,127,232 bytes.
+
+### B6. Decal
+
+Download [Decal.msi](https://www.decaldev.com/releases/2983/Decal.msi) (2.9.8.3) and install it.
+
+### B7. ThwargLauncher
+
+Download [ThwargLauncherInstaller.exe](https://thwargle.com/thwarglauncher/updates/ThwargLauncherInstaller.exe)
+(7.4.0.0) and install it with the defaults.
+
+### B8. Virindi Bundle (needs virindi.net online)
+
+1. Download [VirindiInstaller1008.zip](https://web.archive.org/web/20250820082918id_/http://www.virindi.net/plugins/updates/VirindiInstaller1008.zip)
+   and unzip it into an empty folder.
+2. Run `VirindiInstaller.exe`: **Check Libs**, then **Install**, then close it.
+
+### B9. UtilityBelt
+
+Download [UtilityBeltInstaller-0.2.7.exe](https://gitlab.com/utilitybelt/utilitybelt.gitlab.io/uploads/f24f9359893592252815818da7b3b7ba/UtilityBeltInstaller-0.2.7.exe)
+and install it. It registers itself in Decal.
+
+### B10. MagTools, Mag-Filter, Chaos Helper, TreeStats
+
+| Plugin | Download | Put it in |
+|---|---|---|
+| MagTools 2.2.0 | [MagTools.dll](https://github.com/Mag-nus/Mag-Plugins/releases/download/Mag-Tools-v2.2.0/MagTools.dll) | `C:\Games\Decal Plugins\MagTools` |
+| Mag-Filter 2.0.3 | [MagFilter.dll](https://github.com/Mag-nus/Mag-Plugins/releases/download/Mag-Filter-v2.0.3/MagFilter.dll) | `C:\Games\Decal Plugins\MagFilter` |
+| Chaos Helper 2.2.6.1 | [chaoshelperv2.2.6.1.zip](https://github.com/Oonej/ChaosHelper/releases/download/2.2.6.1/chaoshelperv2.2.6.1.zip) (unzip all files) | `C:\Games\Decal Plugins\ChaosHelper` |
+| TreeStats 1.2.3b | [TreeStats_v1.2.3b.zip](https://github.com/amoeba/treestats/releases/download/v1.2.3b/TreeStats_v1.2.3b.zip) (unzip) | `C:\Games\Decal Plugins\TreeStats` |
+
+Then register each one in Decal:
+
+1. Open **Decal Agent** (desktop shortcut *Decal 3.0*, or its tray icon).
+2. Click **Add**, then **Browse**, pick the `.dll`, and confirm. Repeat for each plugin.
+3. Add **`ThwargFilter.dll`** the same way, from
+   `C:\Program Files (x86)\Thwargle Games\ThwargLauncher`.
+4. Make sure every entry has a tick.
+
+### B11. DemonicControl (needs VTank from B8)
+
+From [github.com/RonGeorge/DemonicControl](https://github.com/RonGeorge/DemonicControl) (tested at commit
+`4a83fe1`), download `DemonicControl.met` and the files in `loot-profiles-and-autopack/`, and copy them all
+into **`C:\Games\VirindiPlugins\VirindiTank`**.
+
+Continue with Part C. Dual-logging (C5) is a manual step there too.
+
+---
+
+## Part C: First start and checks
+
+### C1. ThwargLauncher
+
+Start **ThwargLauncher** from the desktop:
+
+1. **Settings**: the client location should be `C:\Turbine\Asheron's Call\acclient.exe`. Tick
+   **Inject Decal**.
+2. **Servers** (if the script didn't add yours): **Edit Servers** -> add a server with the name, host and
+   port from your server's admin, emulator **ACE**, rodat **off**. Make sure it is ticked as visible.
+3. **Add Account**: your account name and password, linked to that server. On most ACE servers the
+   account is created at your first login. Never put your password in a file or a repo.
+
+### C2. First login
+
+Select the account and click **Launch**. The game starts, connects and shows character selection.
+Create a character, enter the world, then **log out** and close the game. That first start creates
+`Documents\Asheron's Call\UserPreferences.ini`.
+
+If you hear sound but the screen stays black, see [Troubleshooting](#troubleshooting).
+
+### C3. Check Decal and the plugins
+
+Start the game again from ThwargLauncher. In game you should see the **Decal bar**, and windows or icons
+for MagTools, UtilityBelt, Chaos Helper and (with Virindi) VTank. If one is missing, open **Decal
+Agent** outside the game and check that it is listed and ticked.
+
+### C4. VTank and DemonicControl
+
+In the VTank window, load the **DemonicControl** meta and pick a loot profile.
+
+### C5. Dual-logging (two clients at once)
+
+Script users: run the script again (A5). By hand: close the game, open
+`Documents\Asheron's Call\UserPreferences.ini`, and in the `[Net]` section set `ComputeUniquePort=True`.
+ACE logs in one character per account, so add a second account in ThwargLauncher for the second client.
+
+---
 
 ## What gets installed
 
@@ -64,59 +262,23 @@ About 1.3 GB is downloaded (most of it the client installer and the dat files) t
 | 8 | DemonicControl meta + loot/autopack profiles | commit `4a83fe1` (2025-07-18) | VTank folder `C:\Games\VirindiPlugins\VirindiTank` | github.com/RonGeorge/DemonicControl |
 | 9 | Dual-log setting | `ComputeUniquePort=True` | `Documents\Asheron's Call\UserPreferences.ini` | - |
 
-All Decal plugins and filters are registered and enabled in Decal.
-
 Notes:
 - **TreeStats** uploads your characters' stats to the public site treestats.net while enabled.
   Untick it in Decal Agent if you don't want that.
 - **Chaos Helper** and UtilityBelt's windows use Virindi Views, so they need the Virindi Bundle.
 - **Mag-Filter** overlaps with ThwargLauncher's login handling; disable one if logins misbehave.
 
-## After the script
-
-1. **ThwargLauncher** (desktop shortcut):
-   - *Settings*: the AC client path should be `C:\Turbine\Asheron's Call\acclient.exe`; tick **Inject Decal**.
-   - If you didn't pass `-ServerHost`: *Edit Servers* -> add the server with the host and port
-     its admin gives you (usually port `9000`), emulator **ACE**, rodat off.
-   - *Add Account*: your account name and password. On most ACE servers the account is created
-     at first login. Never put the password in a file or in this repo.
-2. **Start the game once** from ThwargLauncher, log in, then log out. This creates
-   `UserPreferences.ini`; re-run the script to switch on dual-logging.
-3. **Decal Agent** (tray icon / desktop shortcut): every plugin should show a tick. Untick what
-   you don't want.
-4. **VTank**: in game, load the `DemonicControl` meta and pick a loot profile in the VTank window.
-
-## Doing it by hand
-
-The script follows these steps; use them if you'd rather click through yourself. Check each
-file's SHA-256 (`Get-FileHash <file>`) against the value in the script's `$Downloads` table.
-
-1. **Prerequisites.** Turn on *.NET Framework 3.5* in *Turn Windows features on or off*.
-   Install both VC++ 2005 SP1 x86 packages, the VC++ 2015-2022 x86 runtime and the DirectX
-   June 2010 runtime (unpack it, then run `DXSETUP.exe`).
-2. **Client.** Run `ac1install.exe`, keep the default folder. Move `acclient.exe`,
-   `client_cell_1.dat`, `client_local_English.dat` and `client_portal.dat` out of
-   `C:\Turbine\Asheron's Call` into a backup folder, then copy the four files from
-   `ac-updates.zip` in.
-3. **Decal.** Install `Decal.msi`.
-4. **ThwargLauncher.** Run `ThwargLauncherInstaller.exe`.
-5. **Virindi.** Unzip `VirindiInstaller1008.zip`, run `VirindiInstaller.exe`, *Check Libs*, *Install*.
-6. **UtilityBelt.** Run its installer; it registers itself in Decal.
-7. **Other plugins.** Put each dll (and Chaos Helper's extra files) in its own folder under
-   `C:\Games\Decal Plugins`, then in Decal Agent: *Add* -> *Browse* -> pick the dll. Do the same
-   for `ThwargFilter.dll` in the ThwargLauncher folder.
-8. **DemonicControl.** Copy `DemonicControl.met` and the files in `loot-profiles-and-autopack`
-   into `C:\Games\VirindiPlugins\VirindiTank`.
-9. **Dual-log.** In `Documents\Asheron's Call\UserPreferences.ini`, section `[Net]`, set
-   `ComputeUniquePort=True` (with the game closed).
-
 ## Troubleshooting
 
+- **Sound but a black screen** (common on Intel graphics): the client's full-screen mode fails. Press
+  **Alt+Enter** to switch to a window. To make it stick: close the game, and in
+  `Documents\Asheron's Call\UserPreferences.ini`, section `[Display]`, set `FullScreen=False`. Change the
+  window size later in the game's options (any resolution smaller than your screen works).
 - **A download fails with "connection reset" / curl exit 56** (seen with web.archive.org):
   a VPN (or a VPN exit node) can make the Wayback Machine drop large downloads.
   Pause the VPN/exit node for the download and turn it back on afterwards, then re-run the script.
 - **Virindi installer: "You do not have the Visual C++ 2005 SP1 redistributable"**: it wants the
-  original 8.0.50727.762 package, not only the later 6195 update. The script installs both.
+  original 8.0.50727.762 package, not only the later 6195 update. Install both (B2; the script does).
 - **Virindi installer: *Install* stays greyed out** after *Check Libs*: it couldn't download its
   component list from virindi.net (`updatelist.php`). The site is down; try again later.
   `-CheckOnly` tells you whether virindi.net answers.
