@@ -7,14 +7,16 @@ DemonicControl VTank meta.
 
 There are two ways to do it:
 
-- **[Part A: with the script](#part-a-install-with-the-script)**. `Install-ACClient.ps1` downloads
-  every file from its original source, checks it against a pinned SHA-256 hash (or Microsoft's
-  signature), installs it and registers the plugins. You only click through two installers.
+- **[Part A: with the script](#part-a-install-with-the-script)**. `Install-ACClient.ps1` takes each
+  file from this repo or its release mirrors where possible, otherwise from its original source, checks
+  it against a pinned SHA-256 hash (and Microsoft's signature for Microsoft files), installs it and
+  registers the plugins. You only click through two installers.
 - **[Part B: by hand](#part-b-install-by-hand)**. The same steps, done yourself, with every download
   link.
 
 Both end with **[Part C: first start and checks](#part-c-first-start-and-checks)**.
-Nothing is redistributed from this repo; everything comes from its authors or their documented mirrors.
+Files whose license allows it, or whose official source is gone, are kept here as copies (see
+[Bundled files](#bundled-files)); everything else comes from its authors or their documented mirrors.
 
 ## Before you start
 
@@ -246,17 +248,17 @@ ACE logs in one character per account, so add a second account in ThwargLauncher
 |---|---|---|---|---|
 | 1 | .NET Framework 3.5 | 3.5 SP1 | Windows feature | Windows Update (DISM) |
 | 1 | Visual C++ 2005 SP1 x86 | 8.0.50727.762 | Windows | Microsoft (removed by Microsoft): **copy in this repo** (`redist/`), fallback Wayback Machine copy of its original URL; Microsoft-signed |
-| 1 | Visual C++ 2005 SP1 MFC update x86 | 8.0.50727.6195 | Windows | download.microsoft.com |
-| 1 | Visual C++ 2015-2022 x86 | current | Windows | aka.ms/vs/17/release (Decal needs it) |
-| 1 | DirectX 9.0c end-user runtime | June 2010 | Windows | download.microsoft.com |
-| 2 | Asheron's Call client (`ac1install.exe`) | Turbine installer | `C:\Turbine\Asheron's Call` | Turbine's URL via the Wayback Machine (as linked by emulator.ac and ACCPP) |
-| 2 | End-of-retail files (`ac-updates.zip`) | portal 926,941,184 / cell 348,127,232 bytes | same folder; originals moved to `_original-installer-files` | archive.org mirror, byte-identical (same MD5) to the MEGA file linked by emulator.ac/ACCPP |
+| 1 | Visual C++ 2005 SP1 MFC update x86 | 8.0.50727.6195 | Windows | **copy in this repo**; fallback download.microsoft.com |
+| 1 | Visual C++ 2015-2022 x86 | 14.44.35211 | Windows | **copy in this repo**; fallback aka.ms/vs/17/release (newest build) (Decal needs it) |
+| 1 | DirectX 9.0c end-user runtime | June 2010 | Windows | **this repo's release**; fallback download.microsoft.com |
+| 2 | Asheron's Call client (`ac1install.exe`) | Turbine installer | `C:\Turbine\Asheron's Call` | **[ac-client-files](https://github.com/GU57AV/ac-client-files) release**; fallback Turbine's URL via the Wayback Machine (as linked by emulator.ac and ACCPP) |
+| 2 | End-of-retail files (`ac-updates.zip`) | portal 926,941,184 / cell 348,127,232 bytes | same folder; originals moved to `_original-installer-files` | **[ac-client-files](https://github.com/GU57AV/ac-client-files) release**; fallback archive.org mirror, byte-identical (same MD5) to the MEGA file linked by emulator.ac/ACCPP |
 | 3 | Decal | 2.9.8.3 | `C:\Program Files (x86)\Decal 3.0` | decaldev.com |
 | 4 | ThwargLauncher (+ ThwargFilter) | 7.4.0.0 | `C:\Program Files (x86)\Thwargle Games\ThwargLauncher` | thwargle.com |
 | 5 | Virindi Bundle (VTank, Virindi Views, Integrator, HUDs...) | installer 1.0.0.8 | `C:\Games\VirindiPlugins` | virindi.net (installer from the Wayback Machine; it downloads the plugins from virindi.net) |
-| 6 | UtilityBelt | 0.2.7 | `C:\Games\Decal Plugins\UtilityBelt` | utilitybelt.gitlab.io |
-| 7 | MagTools | 2.2.0 | `C:\Games\Decal Plugins\MagTools` | github.com/Mag-nus/Mag-Plugins |
-| 7 | Mag-Filter | 2.0.3 | `C:\Games\Decal Plugins\MagFilter` | github.com/Mag-nus/Mag-Plugins |
+| 6 | UtilityBelt | 0.2.7 | `C:\Games\Decal Plugins\UtilityBelt` | **copy in this repo**; fallback utilitybelt.gitlab.io |
+| 7 | MagTools | 2.2.0 | `C:\Games\Decal Plugins\MagTools` | **copy in this repo**; fallback github.com/Mag-nus/Mag-Plugins |
+| 7 | Mag-Filter | 2.0.3 | `C:\Games\Decal Plugins\MagFilter` | **copy in this repo**; fallback github.com/Mag-nus/Mag-Plugins |
 | 7 | Chaos Helper | 2.2.6.1 | `C:\Games\Decal Plugins\ChaosHelper` | github.com/Oonej/ChaosHelper |
 | 7 | TreeStats | 1.2.3b | `C:\Games\Decal Plugins\TreeStats` | github.com/amoeba/treestats |
 | 8 | DemonicControl meta + loot/autopack profiles | commit `4a83fe1` (2025-07-18) | VTank folder `C:\Games\VirindiPlugins\VirindiTank` | github.com/RonGeorge/DemonicControl |
@@ -270,15 +272,34 @@ Notes:
 
 ## Bundled files
 
-Only files whose official download is gone are kept in this repo, unmodified:
+So that an install never depends on sites that may disappear, these files are kept as unmodified copies. The
+script tries them first and the original source only as a fallback, and checks the same pinned SHA-256 either way
+(plus Microsoft's signature for Microsoft files). None of them is covered by this repo's MIT license; each stays
+under its owner's terms, listed below.
 
-| File | What | SHA-256 | Origin |
+**In `redist/` (in git):**
+
+| File | What | SHA-256 | Origin, license |
 |---|---|---|---|
-| `redist/vcredist_x86_2005sp1_8.0.50727.762.exe` | Microsoft Visual C++ 2005 SP1 Redistributable (x86), 8.0.50727.762, 2,723,264 bytes | `eb00f891919d4f894ab725b158459db8834470c382dc60cd3c3ee2c6de6da92c` | Microsoft's original download (`download.microsoft.com/.../e1c773de-.../vcredist_x86.exe`, now 404), retrieved from the Wayback Machine; Authenticode-signed by Microsoft Corporation, 2006-09-15 |
+| `vcredist_x86_2005sp1_8.0.50727.762.exe` | Microsoft Visual C++ 2005 SP1 Redistributable (x86), 8.0.50727.762, 2,723,264 bytes | `eb00f891919d4f894ab725b158459db8834470c382dc60cd3c3ee2c6de6da92c` | Microsoft's original download (`download.microsoft.com/.../e1c773de-.../vcredist_x86.exe`, now 404), retrieved from the Wayback Machine; signed by Microsoft 2006-09-15. Microsoft redistributable |
+| `vcredist_x86_2005sp1_mfc_8.0.50727.6195.exe` | VC++ 2005 SP1 MFC security update (x86), 2,710,520 bytes | `8648c5fc29c44b9112fe52f9a33f80e7fc42d10f3b5b42b2121542a13e44adfd` | download.microsoft.com; Microsoft-signed. Microsoft redistributable |
+| `vc_redist.x86_14.44.35211.exe` | VC++ 2015-2022 Redistributable (x86) 14.44.35211, 13,953,392 bytes | `0c09f2611660441084ce0df425c51c11e147e6447963c3690f97e0b25c55ed64` | aka.ms/vs/17/release (2026-10/11); Microsoft-signed. Microsoft redistributable |
+| `UtilityBeltInstaller-0.2.7.exe` | UtilityBelt 0.2.7 installer, 5,497,708 bytes | `6429c4f744ca7c6842ed8689fa95b6dcbeba0d5d4a6db7aae7daef65e1742889` | gitlab.com/utilitybelt (upload linked from utilitybelt.gitlab.io). The UtilityBelt projects are MIT licensed |
+| `MagTools.dll` | Mag-Tools 2.2.0, 340,480 bytes | `70a629dc1fe1f1fd0416ea3e05aa28e64ec0f23f3e50d4a091ffb4ed17be7467` | github.com/Mag-nus/Mag-Plugins release; LGPL-2.1 (`redist/LICENSE-Mag-Plugins-LGPL-2.1.txt`; source at that repo) |
+| `MagFilter.dll` | Mag-Filter 2.0.3, 35,328 bytes | `bace3692fcef8863506609556f4bc8856764878bb826fd073a4d4f7fcbc6a882` | same as above, LGPL-2.1 |
 
-Check it yourself: `Get-FileHash redist\*.exe` and right-click -> Properties -> Digital Signatures. The script
-verifies both before running it. It is Microsoft's redistributable, included unchanged under Microsoft's terms for
-distributing it; it is not covered by this repo's MIT license.
+**As release downloads** (too big for git, or kept apart):
+
+| File | Where | SHA-256 | Origin, license |
+|---|---|---|---|
+| `directx_Jun2010_redist.exe` (100,275,120 bytes) | [this repo's `files-2026-11` release](https://github.com/GU57AV/ac-client-setup/releases/tag/files-2026-11) | `053f76dcbb28802e23341b6a787e3b0791c0fa5c8d4d011b1044172dbf89c73b` | download.microsoft.com; Microsoft-signed. Microsoft redistributable |
+| `ac1install.exe` (598,884,909 bytes), `ac-updates.zip` (507,898,112 bytes) | [GU57AV/ac-client-files](https://github.com/GU57AV/ac-client-files) release | `251de006…f61eefc7`, `66e90236…2ed3d6` | Turbine's installer (Wayback Machine) and the end-of-retail files (archive.org); Asheron's Call is © Warner Bros. Kept in a separate repo |
+
+Not copied: Decal (no license found; decaldev.com is online), ThwargLauncher, Chaos Helper, TreeStats,
+DemonicControl (no license file, sources online), and the Virindi Bundle (its license forbids redistribution).
+
+Check a file yourself: `Get-FileHash redist\<file>`; for Microsoft files also right-click -> Properties ->
+Digital Signatures.
 
 ## Troubleshooting
 

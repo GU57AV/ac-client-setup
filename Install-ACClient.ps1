@@ -56,29 +56,43 @@ $UninstallKeys = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Un
 
 # --- Downloads (source, pinned SHA-256) --------------------------------------
 # Wayback Machine 'id_' URLs return the archived file byte-for-byte.
+# Local  = copy kept in this repo (redist\), used first.
+# Mirror = copy in this project's GitHub releases, tried before the original Url.
+$MirrorBase = 'https://github.com/GU57AV/ac-client-setup/releases/download/files-2026-11'
+$ClientMirrorBase = 'https://github.com/GU57AV/ac-client-files/releases/download/files-2026-11'
 $Downloads = @{
     VC2005SP1     = @{ File = 'vcredist_x86.exe'; Sha256 = 'EB00F891919D4F894AB725B158459DB8834470C382DC60CD3C3EE2C6DE6DA92C'; MicrosoftSigned = $true
                        Local = 'redist\vcredist_x86_2005sp1_8.0.50727.762.exe'   # copy kept in this repo (Microsoft removed it)
                        Url = 'https://web.archive.org/web/20190419092632id_/https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe' }
-    VC2005MFC     = @{ File = 'vcredist_x86.exe'; Sha256 = '8648C5FC29C44B9112FE52F9A33F80E7FC42D10F3B5B42B2121542A13E44ADFD'
+    VC2005MFC     = @{ File = 'vcredist_x86.exe'; Sha256 = '8648C5FC29C44B9112FE52F9A33F80E7FC42D10F3B5B42B2121542A13E44ADFD'; MicrosoftSigned = $true
+                       Local = 'redist\vcredist_x86_2005sp1_mfc_8.0.50727.6195.exe'
                        Url = 'https://download.microsoft.com/download/8/B/4/8B42259F-5D70-43F4-AC2E-4B208FD8D66A/vcredist_x86.EXE' }
-    DirectX       = @{ File = 'directx_Jun2010_redist.exe'; Sha256 = '053F76DCBB28802E23341B6A787E3B0791C0FA5C8D4D011B1044172DBF89C73B'
+    DirectX       = @{ File = 'directx_Jun2010_redist.exe'; Sha256 = '053F76DCBB28802E23341B6A787E3B0791C0FA5C8D4D011B1044172DBF89C73B'; MicrosoftSigned = $true
+                       Mirror = "$MirrorBase/directx_Jun2010_redist.exe"
                        Url = 'https://download.microsoft.com/download/8/4/A/84A35BF1-DAFE-4AE8-82AF-AD2AE20B6B14/directx_Jun2010_redist.exe' }
-    VCx86         = @{ File = 'vc_redist.x86.exe'; Sha256 = $null; MicrosoftSigned = $true
+    # Pinned to the copy in redist\ (14.44.35211); aka.ms always serves the newest build, so the fallback may
+    # have another hash: in that case only the Microsoft signature is required (see Get-VerifiedFile).
+    VCx86         = @{ File = 'vc_redist.x86.exe'; Sha256 = '0C09F2611660441084CE0DF425C51C11E147E6447963C3690F97E0B25C55ED64'; MicrosoftSigned = $true
+                       Local = 'redist\vc_redist.x86_14.44.35211.exe'; HashOptionalForUrl = $true
                        Url = 'https://aka.ms/vs/17/release/vc_redist.x86.exe' }
     ACInstaller   = @{ File = 'ac1install.exe'; Sha256 = '251DE0067F9599A2A566CF7B218B2CB9163292B571BD48050CC6B754F61EEFC7'
+                       Mirror = "$ClientMirrorBase/ac1install.exe"
                        Url = 'https://web.archive.org/web/20201121104423id_/http://content.turbine.com/sites/clientdl/ac1/ac1install.exe' }
     EndOfRetail   = @{ File = 'ac-updates.zip'; Sha256 = '66E90236326C8713BE014B4CD5B0BF7AC7331970D0D3E9A2552C2E78F92ED3D6'
+                       Mirror = "$ClientMirrorBase/ac-updates.zip"
                        Url = 'https://archive.org/download/ac-updates/ac-updates.zip' }
     Decal         = @{ File = 'Decal.msi'; Sha256 = '101365BA4378BE20D9AB57BA9F1C1DEDA5F93BB1B7BDB511DA836C9A69A31F26'
                        Url = 'https://www.decaldev.com/releases/2983/Decal.msi' }
     Thwarg        = @{ File = 'ThwargLauncherInstaller.exe'; Sha256 = 'C5156519695608A8DC57077DD7E4E3DDF29386008AD4B9E06A0C89B422635F61'
                        Url = 'https://thwargle.com/thwarglauncher/updates/ThwargLauncherInstaller.exe' }
     UtilityBelt   = @{ File = 'UtilityBeltInstaller-0.2.7.exe'; Sha256 = '6429C4F744CA7C6842ED8689FA95B6DCBEBA0D5D4A6DB7AAE7DAEF65E1742889'
+                       Local = 'redist\UtilityBeltInstaller-0.2.7.exe'
                        Url = 'https://gitlab.com/utilitybelt/utilitybelt.gitlab.io/uploads/f24f9359893592252815818da7b3b7ba/UtilityBeltInstaller-0.2.7.exe' }
     MagTools      = @{ File = 'MagTools.dll'; Sha256 = '70A629DC1FE1F1FD0416EA3E05AA28E64EC0F23F3E50D4A091FFB4ED17BE7467'
+                       Local = 'redist\MagTools.dll'
                        Url = 'https://github.com/Mag-nus/Mag-Plugins/releases/download/Mag-Tools-v2.2.0/MagTools.dll' }
     MagFilter     = @{ File = 'MagFilter.dll'; Sha256 = 'BACE3692FCEF8863506609556F4BC8856764878BB826FD073A4D4F7FCBC6A882'
+                       Local = 'redist\MagFilter.dll'
                        Url = 'https://github.com/Mag-nus/Mag-Plugins/releases/download/Mag-Filter-v2.0.3/MagFilter.dll' }
     ChaosHelper   = @{ File = 'chaoshelperv2.2.6.1.zip'; Sha256 = '83D0A3BAD4020DBCFF96F1F5ED05A4D4C21A51D493627EC81B1A2CD5602DA8EC'
                        Url = 'https://github.com/Oonej/ChaosHelper/releases/download/2.2.6.1/chaoshelperv2.2.6.1.zip' }
@@ -126,30 +140,40 @@ function Get-VerifiedFile($key) {
     $dir = Join-Path $WorkDir $key
     $path = Join-Path $dir $d.File
     New-Item -ItemType Directory -Force $dir | Out-Null
-    # Files kept in this repo (official source gone) are used from the repo; the URL is only a fallback
-    $local = if ($d.Local) { Join-Path $PSScriptRoot $d.Local }
-    if (-not (Test-Path $path) -and $local -and (Test-Path $local)) {
-        Info "Using $($d.Local) from this repo"
-        Copy-Item $local $path
-    }
-    if (-not (Test-Path $path)) {
-        Info "Downloading $($d.File) from $(([uri]$d.Url).Host) ..."
-        & curl.exe --http1.1 -L --fail -s -S --retry 5 --retry-all-errors --retry-delay 10 --max-time 3600 -C - -o $path $d.Url
-        if ($LASTEXITCODE -ne 0) {
-            Remove-Item $path -ErrorAction SilentlyContinue
-            throw "Download of $($d.File) failed (curl exit $LASTEXITCODE). If you use a VPN or VPN exit node, see README 'Troubleshooting'."
+
+    # Sources in order: copy in this repo (redist\), this project's GitHub release mirror, the original URL.
+    # Each candidate must pass the checks; a failed or wrong file moves on to the next source.
+    $sources = @()
+    if ($d.Local)  { $sources += @{ Kind = 'repo';   Where = (Join-Path $PSScriptRoot $d.Local) } }
+    if ($d.Mirror) { $sources += @{ Kind = 'mirror'; Where = $d.Mirror } }
+    $sources += @{ Kind = 'original'; Where = $d.Url }
+
+    $problems = @()
+    foreach ($src in $sources) {
+        if (Test-Path $path) { Remove-Item $path }   # always verify what this source delivers
+        if ($src.Kind -eq 'repo') {
+            if (-not (Test-Path $src.Where)) { continue }
+            Info "Using $($d.Local) from this repo"
+            Copy-Item $src.Where $path
+        } else {
+            Info "Downloading $($d.File) from $(([uri]$src.Where).Host) ($($src.Kind)) ..."
+            & curl.exe --http1.1 -L --fail -s -S --retry 5 --retry-all-errors --retry-delay 10 --max-time 3600 -o $path $src.Where
+            if ($LASTEXITCODE -ne 0) { $problems += "$($src.Kind): curl exit $LASTEXITCODE"; Remove-Item $path -ErrorAction SilentlyContinue; continue }
         }
+        # aka.ms (VCx86) serves the newest build: from the original URL only the Microsoft signature is required
+        $hashRequired = $d.Sha256 -and -not ($d.HashOptionalForUrl -and $src.Kind -eq 'original')
+        if ($hashRequired) {
+            $h = (Get-FileHash $path -Algorithm SHA256).Hash
+            if ($h -ne $d.Sha256) { $problems += "$($src.Kind): SHA-256 $h is not the pinned $($d.Sha256)"; Remove-Item $path; continue }
+        }
+        if ($d.MicrosoftSigned) {
+            $s = Get-AuthenticodeSignature $path
+            if ($s.Status -ne 'Valid' -or $s.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') { $problems += "$($src.Kind): not validly signed by Microsoft"; Remove-Item $path; continue }
+        }
+        Info "Verified $($d.File) ($($src.Kind))"
+        return $path
     }
-    if ($d.Sha256) {
-        $h = (Get-FileHash $path -Algorithm SHA256).Hash
-        if ($h -ne $d.Sha256) { Remove-Item $path; throw "$($d.File): SHA-256 $h does not match the pinned $($d.Sha256). Deleted it; not continuing." }
-    }
-    if ($d.MicrosoftSigned) {
-        $s = Get-AuthenticodeSignature $path
-        if ($s.Status -ne 'Valid' -or $s.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') { Remove-Item $path; throw "$($d.File): not validly signed by Microsoft. Deleted it; not continuing." }
-    }
-    Info "Verified $($d.File)"
-    $path
+    throw "No good copy of $($d.File): $($problems -join '; '). If you use a VPN or VPN exit node, see README 'Troubleshooting'."
 }
 
 function Invoke-Installer($path, [string[]]$arguments, $label) {

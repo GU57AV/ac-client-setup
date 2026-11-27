@@ -13,3 +13,4 @@ downloads/
 
 # Exception: redistributables we keep because their official source is gone (see README "Bundled files")
 !redist/*.exe
+!redist/*.dll
