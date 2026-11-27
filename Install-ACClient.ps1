@@ -57,7 +57,8 @@ $UninstallKeys = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Un
 # --- Downloads (source, pinned SHA-256) --------------------------------------
 # Wayback Machine 'id_' URLs return the archived file byte-for-byte.
 $Downloads = @{
-    VC2005SP1     = @{ File = 'vcredist_x86.exe'; Sha256 = 'EB00F891919D4F894AB725B158459DB8834470C382DC60CD3C3EE2C6DE6DA92C'
+    VC2005SP1     = @{ File = 'vcredist_x86.exe'; Sha256 = 'EB00F891919D4F894AB725B158459DB8834470C382DC60CD3C3EE2C6DE6DA92C'; MicrosoftSigned = $true
+                       Local = 'redist\vcredist_x86_2005sp1_8.0.50727.762.exe'   # copy kept in this repo (Microsoft removed it)
                        Url = 'https://web.archive.org/web/20190419092632id_/https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe' }
     VC2005MFC     = @{ File = 'vcredist_x86.exe'; Sha256 = '8648C5FC29C44B9112FE52F9A33F80E7FC42D10F3B5B42B2121542A13E44ADFD'
                        Url = 'https://download.microsoft.com/download/8/B/4/8B42259F-5D70-43F4-AC2E-4B208FD8D66A/vcredist_x86.EXE' }
@@ -125,6 +126,12 @@ function Get-VerifiedFile($key) {
     $dir = Join-Path $WorkDir $key
     $path = Join-Path $dir $d.File
     New-Item -ItemType Directory -Force $dir | Out-Null
+    # Files kept in this repo (official source gone) are used from the repo; the URL is only a fallback
+    $local = if ($d.Local) { Join-Path $PSScriptRoot $d.Local }
+    if (-not (Test-Path $path) -and $local -and (Test-Path $local)) {
+        Info "Using $($d.Local) from this repo"
+        Copy-Item $local $path
+    }
     if (-not (Test-Path $path)) {
         Info "Downloading $($d.File) from $(([uri]$d.Url).Host) ..."
         & curl.exe --http1.1 -L --fail -s -S --retry 5 --retry-all-errors --retry-delay 10 --max-time 3600 -C - -o $path $d.Url

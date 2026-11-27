@@ -126,7 +126,7 @@ and 3.0)** -> OK. Windows downloads it from Windows Update.
 
 | File | Link |
 |---|---|
-| VC++ 2005 SP1 (8.0.50727.762), Microsoft no longer hosts it | [Wayback Machine copy of Microsoft's URL](https://web.archive.org/web/20190419092632id_/https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe) |
+| VC++ 2005 SP1 (8.0.50727.762), Microsoft no longer hosts it | [`redist/vcredist_x86_2005sp1_8.0.50727.762.exe`](redist/vcredist_x86_2005sp1_8.0.50727.762.exe) in this repo, or the [Wayback Machine copy of Microsoft's URL](https://web.archive.org/web/20190419092632id_/https://download.microsoft.com/download/e/1/c/e1c773de-73ba-494a-a5ba-f24906ecf088/vcredist_x86.exe) |
 | VC++ 2005 SP1 MFC security update (8.0.50727.6195) | [download.microsoft.com](https://download.microsoft.com/download/8/B/4/8B42259F-5D70-43F4-AC2E-4B208FD8D66A/vcredist_x86.EXE) |
 | VC++ 2015-2022 x86 (Decal needs it) | [aka.ms/vs/17/release/vc_redist.x86.exe](https://aka.ms/vs/17/release/vc_redist.x86.exe) |
 
@@ -245,7 +245,7 @@ ACE logs in one character per account, so add a second account in ThwargLauncher
 | # | Component | Version | Installed to | Source |
 |---|---|---|---|---|
 | 1 | .NET Framework 3.5 | 3.5 SP1 | Windows feature | Windows Update (DISM) |
-| 1 | Visual C++ 2005 SP1 x86 | 8.0.50727.762 | Windows | Microsoft (removed by Microsoft; Wayback Machine copy of its original URL, Microsoft-signed) |
+| 1 | Visual C++ 2005 SP1 x86 | 8.0.50727.762 | Windows | Microsoft (removed by Microsoft): **copy in this repo** (`redist/`), fallback Wayback Machine copy of its original URL; Microsoft-signed |
 | 1 | Visual C++ 2005 SP1 MFC update x86 | 8.0.50727.6195 | Windows | download.microsoft.com |
 | 1 | Visual C++ 2015-2022 x86 | current | Windows | aka.ms/vs/17/release (Decal needs it) |
 | 1 | DirectX 9.0c end-user runtime | June 2010 | Windows | download.microsoft.com |
@@ -267,6 +267,18 @@ Notes:
   Untick it in Decal Agent if you don't want that.
 - **Chaos Helper** and UtilityBelt's windows use Virindi Views, so they need the Virindi Bundle.
 - **Mag-Filter** overlaps with ThwargLauncher's login handling; disable one if logins misbehave.
+
+## Bundled files
+
+Only files whose official download is gone are kept in this repo, unmodified:
+
+| File | What | SHA-256 | Origin |
+|---|---|---|---|
+| `redist/vcredist_x86_2005sp1_8.0.50727.762.exe` | Microsoft Visual C++ 2005 SP1 Redistributable (x86), 8.0.50727.762, 2,723,264 bytes | `eb00f891919d4f894ab725b158459db8834470c382dc60cd3c3ee2c6de6da92c` | Microsoft's original download (`download.microsoft.com/.../e1c773de-.../vcredist_x86.exe`, now 404), retrieved from the Wayback Machine; Authenticode-signed by Microsoft Corporation, 2006-09-15 |
+
+Check it yourself: `Get-FileHash redist\*.exe` and right-click -> Properties -> Digital Signatures. The script
+verifies both before running it. It is Microsoft's redistributable, included unchanged under Microsoft's terms for
+distributing it; it is not covered by this repo's MIT license.
 
 ## Troubleshooting
 
@@ -300,5 +312,6 @@ Mag-Filter), Oonej (Chaos Helper), amoeba (TreeStats), RonGeorge (DemonicControl
 ACEmulator, emulator.ac and ACCPP communities for the setup documentation.
 
 The script and this guide are MIT licensed (see `LICENSE`). That covers only this repo's own
-files, not the software it downloads, which stays under its owners' terms. Asheron's Call is a
+files, not the software it downloads or the Microsoft redistributable in `redist/`, which stay under their owners'
+terms. Asheron's Call is a
 trademark of Warner Bros. Entertainment; this project is not affiliated with it.
